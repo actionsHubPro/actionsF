@@ -1,4 +1,4 @@
-name: Mi Primera Action
+name: Test Compliance Action
 
 on:
   push:
@@ -6,13 +6,17 @@ on:
   workflow_dispatch:
 
 jobs:
-  saludo:
+  audit-job:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Ejecutar saludo
-        run: |
-          echo "¡Hola actionsHubPro! Tu primera GitHub Action se está ejecutando."
-          echo "La conexión SSH y la configuración de Git han sido exitosas."
+      - name: Run Compliance Auditor
+        uses: ./
+        
+      - name: Upload Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: compliance-report
+          path: compliance_report.md

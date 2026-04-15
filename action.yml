@@ -1,0 +1,11 @@
+name: 'ComplianceGuard Pro'
+description: 'Genera reportes de cumplimiento automáticos para auditorías.'
+author: 'actionsHubPro'
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+
+branding:
+  icon: 'shield'
+  color: 'blue'
