@@ -32,11 +32,17 @@ def run_audit():
 
     report += "\n\n*Este reporte fue generado automáticamente por ComplianceGuard.*"
 
-    # Guardar reporte para que GitHub lo muestre
+    # Guardar reporte para que GitHub lo muestre en el Resumen (Step Summary)
+    summary_file = os.environ.get('GITHUB_STEP_SUMMARY')
+    if summary_file:
+        with open(summary_file, 'a', encoding='utf-8') as f:
+            f.write(report)
+    
+    # También lo guardamos como archivo independiente
     with open('compliance_report.md', 'w', encoding='utf-8') as f:
         f.write(report)
     
-    print("--- Auditoría Finalizada. Reporte generado en compliance_report.md ---")
+    print("--- Auditoría Finalizada. Reporte enviado al Resumen de GitHub ---")
     
     # Mostrar el reporte en el log del runner para depuración
     print(report)
