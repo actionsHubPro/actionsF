@@ -1,0 +1,18 @@
+name: Mi Primera Action
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  saludo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Ejecutar saludo
+        run: |
+          echo "¡Hola actionsHubPro! Tu primera GitHub Action se está ejecutando."
+          echo "La conexión SSH y la configuración de Git han sido exitosas."
