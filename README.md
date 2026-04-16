@@ -45,9 +45,10 @@ jobs:
 
 ## Inputs
 
-| Input | Description | Required |
-| --- | --- | --- |
-| `github-token` | The GITHUB_TOKEN used to query the GitHub API. | Yes |
+| Input | Description | Required | Default |
+| --- | --- | --- | --- |
+| `github-token` | The GITHUB_TOKEN used to query the GitHub API. | Yes | N/A |
+| `language` | Report language (options: `en`, `es`). | No | `en` |
 
 ## Output
 
