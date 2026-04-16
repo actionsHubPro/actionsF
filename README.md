@@ -43,6 +43,18 @@ jobs:
           path: compliance_report.md
 ```
 
+### Multi-language Support
+
+You can choose the language of the final report by using the `language` input. Currently supported: **English (`en`)** and **Spanish (`es`)**.
+
+```yaml
+      - name: Run AuditShield (Español)
+        uses: actionsHubPro/audit-trace@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          language: 'es'
+```
+
 ## Inputs
 
 | Input | Description | Required | Default |
