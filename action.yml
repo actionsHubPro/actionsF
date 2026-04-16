@@ -10,6 +10,14 @@ inputs:
     description: 'Idioma del reporte (en/es)'
     required: false
     default: 'en'
+  auto-archive:
+    description: '¿Guardar automáticamente el reporte en una rama? (true/false)'
+    required: false
+    default: 'false'
+  archive-branch:
+    description: 'Nombre de la rama para el historial de auditoría'
+    required: false
+    default: 'audit-history'
 
 runs:
   using: 'docker'
@@ -17,6 +25,8 @@ runs:
   env:
     GITHUB_TOKEN: ${{ inputs.github-token }}
     LANGUAGE: ${{ inputs.language }}
+    AUTO_ARCHIVE: ${{ inputs.auto-archive }}
+    ARCHIVE_BRANCH: ${{ inputs.archive-branch }}
 
 branding:
   icon: 'shield'

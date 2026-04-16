@@ -8,6 +8,8 @@ def run_audit():
     repo_name = os.environ.get('GITHUB_REPOSITORY')
     event_path = os.environ.get('GITHUB_EVENT_PATH')
     lang = os.environ.get('LANGUAGE', 'en').lower()
+    auto_archive = os.environ.get('AUTO_ARCHIVE', 'false').lower() == 'true'
+    archive_branch = os.environ.get('ARCHIVE_BRANCH', 'audit-history')
     
     g = Github(token)
     repo = g.get_repo(repo_name)
@@ -71,17 +73,20 @@ def run_audit():
         "reviews_count": 0,
         "reviewers": "None",
         "changes_requested": 0,
-        "pr_number": "N/A"
+        "pr_number": "N/A",
+        "pr_id_only": "general"
     }
 
     if event_path:
         with open(event_path, 'r') as f:
             event_data = json.load(f)
             if 'pull_request' in event_data:
-                pr = repo.get_pull(event_data['pull_request']['number'])
+                pr_num = event_data['pull_request']['number']
+                pr = repo.get_pull(pr_num)
                 pr_data["author"] = pr.user.login
                 pr_data["opened_at"] = pr.created_at.strftime("%Y-%m-%d %H:%M:%S")
                 pr_data["pr_number"] = f"#{pr.number}"
+                pr_data["pr_id_only"] = f"PR-{pr.number}"
                 
                 reviews = pr.get_reviews()
                 reviewers_set = set()
@@ -107,16 +112,19 @@ def run_audit():
                 checks[t["security"]] = t["pass"]
 
     # Generar Documento Formal
-    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    now_obj = datetime.now()
+    now_str = now_obj.strftime("%Y-%m-%d %H:%M:%S")
+    timestamp_id = now_obj.strftime("%Y%m%d_%H%M%S")
     
-    report = f"REPORT-ID: {repo_name.replace('/', '-')}-{datetime.now().strftime('%Y%m%d%H%M')}\n"
+    report_id = f"{repo_name.replace('/', '-')}-{timestamp_id}"
+    report = f"REPORT-ID: {report_id}\n"
     report += "--------------------------------------------------\n"
     report += f"{t['title']}\n"
     report += "--------------------------------------------------\n\n"
     
     report += f"### {t['repo_info']}\n"
     report += f"- {t['repo_label']}: {repo_name}\n"
-    report += f"- {t['report_date']}: {now}\n"
+    report += f"- {t['report_date']}: {now_str}\n"
     report += f"- {t['pr_id']}: {pr_data['pr_number']}\n\n"
 
     report += f"### {t['metrics_title']}\n"
@@ -142,6 +150,28 @@ def run_audit():
         with open(summary_file, 'a', encoding='utf-8') as f:
             f.write(report)
     
+    # Auto-archivado en rama
+    if auto_archive:
+        try:
+            # Verificar si la rama existe, si no crearla
+            try:
+                branch = repo.get_branch(archive_branch)
+            except:
+                # Crear rama huérfana (orphan-like via API)
+                print(f"La rama {archive_branch} no existe. Creándola...")
+                # Para crear una rama nueva necesitamos un SHA origen. Usamos el actual.
+                main_sha = repo.get_branch(repo.default_branch).commit.sha
+                repo.create_git_ref(f"refs/heads/{archive_branch}", main_sha)
+            
+            # Crear la ruta del archivo: history/PR-123/audit_timestamp.md
+            file_path = f"history/{pr_data['pr_id_only']}/audit_{timestamp_id}.md"
+            commit_msg = f"Archive compliance report for {pr_data['pr_id_only']} at {now_str}"
+            
+            repo.create_file(file_path, commit_msg, report, branch=archive_branch)
+            print(f"Reporte archivado exitosamente en la rama {archive_branch} -> {file_path}")
+        except Exception as e:
+            print(f"Error al archivar el reporte: {str(e)}")
+
     with open('compliance_report.md', 'w', encoding='utf-8') as f:
         f.write(report)
 

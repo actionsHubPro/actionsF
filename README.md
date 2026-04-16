@@ -55,12 +55,26 @@ You can choose the language of the final report by using the `language` input. C
           language: 'es'
 ```
 
+### Automated Audit History
+
+You can maintain a permanent, immutable record of all audits by enabling the `auto-archive` feature. This will save each report to a dedicated branch (default: `audit-history`) without affecting your main code.
+
+```yaml
+      - name: Run AuditShield (with Auto-Archive)
+        uses: actionsHubPro/audit-trace@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-archive: 'true'
+```
+
 ## Inputs
 
 | Input | Description | Required | Default |
 | --- | --- | --- | --- |
 | `github-token` | The GITHUB_TOKEN used to query the GitHub API. | Yes | N/A |
 | `language` | Report language (options: `en`, `es`). | No | `en` |
+| `auto-archive` | Automatically save reports to a branch (`true`/`false`). | No | `false` |
+| `archive-branch` | Name of the branch for history. | No | `audit-history` |
 
 ## Output
 
