@@ -32,7 +32,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run AuditShield
-        uses: actionsHubPro/actionsF@main # Replace with your repo/version
+        uses: actionsHubPro/audit-trace@main # Replace with your repo/version
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
         
