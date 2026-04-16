@@ -2,9 +2,16 @@ name: 'ComplianceGuard Pro'
 description: 'Genera reportes de cumplimiento automáticos para auditorías.'
 author: 'actionsHubPro'
 
+inputs:
+  github-token:
+    description: 'Token de acceso de GitHub (usualmente secrets.GITHUB_TOKEN)'
+    required: true
+
 runs:
   using: 'docker'
   image: 'Dockerfile'
+  env:
+    GITHUB_TOKEN: ${{ inputs.github-token }}
 
 branding:
   icon: 'shield'
